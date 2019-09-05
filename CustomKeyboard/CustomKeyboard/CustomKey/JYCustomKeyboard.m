@@ -193,14 +193,28 @@ enum {
 {
     [[UIDevice currentDevice] playInputClick];
     [self.textView deleteBackward];
-    
-    if ([self.textView isKindOfClass:[UITextField class]])
-    {
-        [[NSNotificationCenter defaultCenter] postNotificationName:UITextFieldTextDidChangeNotification object:self.textView];
+    NSString *deleteStr = @"";
+    if ([self.textView isKindOfClass:[UITextField class]]){
+        UITextField *textField = (UITextField *)self.textView;
+        if([self.customdelegate respondsToSelector:@selector(customKeyboard:shouldChangeCharactersInRange:replacementString:)]){
+            if( [self.customdelegate customKeyboard:textField shouldChangeCharactersInRange:[JYCustomKeyboard makeTextChangeRang:self.textView] replacementString:deleteStr]){
+                [[NSNotificationCenter defaultCenter] postNotificationName:UITextFieldTextDidChangeNotification object:self.textView];
+            }
+        }
+        else{
+            [[NSNotificationCenter defaultCenter] postNotificationName:UITextFieldTextDidChangeNotification object:self.textView];
+        }
     }
-    else if ([self.textView isKindOfClass:[UITextView class]])
-    {
-        [[NSNotificationCenter defaultCenter] postNotificationName:UITextViewTextDidChangeNotification object:self.textView];
+    else if ([self.textView isKindOfClass:[UITextView class]]){
+        UITextView *textVl = (UITextView *)self.textView;
+        if([self.customdelegate respondsToSelector:@selector(customKeyboard:shouldChangeTextInRange:replacementText:)]){
+            if([self.customdelegate customKeyboard:textVl shouldChangeTextInRange:[JYCustomKeyboard makeTextChangeRang:self.textView] replacementText:deleteStr]){
+                [[NSNotificationCenter defaultCenter] postNotificationName:UITextViewTextDidChangeNotification object:self.textView];
+            }
+        }
+        else{
+            [[NSNotificationCenter defaultCenter] postNotificationName:UITextViewTextDidChangeNotification object:self.textView];
+        }
     }
 }
 
